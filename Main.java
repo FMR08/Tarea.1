@@ -1,12 +1,17 @@
-import java.util.ArrayList;
+mport java.util.ArrayList;
 import java.util.Date;
 
 class Cliente {
     private String nombre;
     private String rut;
-    public Cliente(String Nom,String rut) {
+    private String direcion;
+    public Cliente(String Nom,String rut,String direcion) {
         nombre=Nom;
         this.rut=rut;
+    }
+
+    public String getRut() {
+        return rut;
     }
 }
 class Direcion {
@@ -18,20 +23,26 @@ class Direcion {
 class DocTributario{
     private String numero;
     private String rut;
-    private Date fecha;
-    public DocTributario(String num, String rut){
-        this.rut=rut;
-        numero=num;
+    private Date fecha = new Date();
+    private int año;
+    private int mes ;
+    private int dia ;
+    public DocTributario(String numero,OrdenCompra ordenCompra){
+        this.rut=ordenCompra.cliente.getRut();
+        this.numero=numero;
+        año=fecha.getYear();
+        mes=fecha.getMonth();
+        dia= fecha.getDay();
     }
 }
 class Boleta extends DocTributario{
-    public Boleta(String num, String rut) {
-        super(num, rut);
+    public Boleta(String num, OrdenCompra ordenCompra) {
+        super(num,ordenCompra);
     }
 }
 class Factura extends DocTributario{
-    public Factura(String num, String rut) {
-        super(num, rut);
+    public Factura(String num, OrdenCompra ordenCompra) {
+        super(num, ordenCompra);
     }
 }
 class Articulo {
@@ -56,6 +67,7 @@ class Articulo {
     }
 }
 class DetalleOrden {
+
     private int cantidad;
     private Articulo articulo;
 
@@ -81,27 +93,46 @@ class DetalleOrden {
     }
 }
 class OrdenCompra{
+    public Cliente cliente;
     private Date fecha;
     private String estado;
-    ArrayList<DetalleOrden> Orden= new ArrayList<DetalleOrden>();
-    public OrdenCompra (String estado){
-        this.estado=estado;
+    private ArrayList<DetalleOrden> Orden;
+    public OrdenCompra (Cliente cliente){
+        this.cliente=cliente;
+        Orden = new ArrayList();
     }
+
     public void AgregarCompra(DetalleOrden gg) {
         Orden.add(gg);
     }
     public float calcPrecio() {
-    return 0;
+        float suma=0;
+        for (int i=0;i<Orden.size();i++) {
+            suma += Orden.get(i).calcPrecio();
+        }
+        return suma;
     }
     public float calcPreciosinIVA() {
-        return 0;
+        float suma=0;
+        for (int i=0;i<Orden.size();i++) {
+            suma += Orden.get(i).calcPreciosinIVA();
+        }
+        return suma;
     }
     public float calcIVA() {
-        return 0;
+        float suma=0;
+        for (int i=0;i<Orden.size();i++) {
+            suma += Orden.get(i).calcIVA();
+        }
+        return suma;
     }
+
     public float calcPeso() {
-        
-        return 0;
+        float suma=0;
+        for (int i=0;i<Orden.size();i++) {
+            suma += Orden.get(i).calcPeso();
+        }
+        return suma;
     }
 }
 class Pago {
@@ -127,9 +158,18 @@ class Tarjeta extends Pago {
 }
 public class Main {
     public static void main(String[] args) {
-        Pago pago=new Pago();
-        Date fecha=new Date(5,5,5);
-        System.out.println(pago.getFecha());
-
+        Cliente raul = new Cliente("Raul","1234567","esta");
+        Articulo uvas = new  Articulo(0.9F,"uvas verdes","uvas de provincia", 3.50F);
+        Articulo sandia = new Articulo(8.70F,"sandia","sandia esilo resaurante ",12.0f);
+        Articulo fideos =new Articulo(2.50f,"cabello de angel","finos fideos filetiado finamente fijado del fiel fiscal",6.25f);
+        DetalleOrden producto1 =new DetalleOrden(1,uvas);
+        DetalleOrden producto2 =new DetalleOrden(1,sandia);
+        DetalleOrden producto3 =new DetalleOrden(1,fideos);
+        OrdenCompra compra =new OrdenCompra(raul);
+        compra.AgregarCompra(producto1);
+        compra.AgregarCompra(producto2);
+        compra.AgregarCompra(producto3);
+        float p=compra.calcPrecio();
+        System.out.println(p);
     }
 }
